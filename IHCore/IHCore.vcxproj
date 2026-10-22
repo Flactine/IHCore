@@ -609,4 +609,23 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\libs\FA2Pack\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(ProjectDir)..\libs\FA2Pack\lib\libcrypto.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="FA2PackFile.cpp" />
+    <ClCompile Include="ResourcePack\ResourcePack.cpp" />
+    <ClCompile Include="ResourcePack\Body.Encryption.cpp" />
+    <ClInclude Include="FA2PackFile.h" />
+    <ClInclude Include="ResourcePack\ResourcePack.h" />
+    <ClInclude Include="ResourcePack\Body.Cipher.h" />
+  </ItemGroup>
+  <Target Name="CopyFA2PackCrypto" AfterTargets="Build" Condition="'$(Platform)'=='Win32'">
+    <Copy SourceFiles="$(ProjectDir)..\libs\FA2Pack\bin\libcrypto-1_1.dll" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+  </Target>
 </Project>

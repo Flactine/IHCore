@@ -26,6 +26,10 @@
 *.a
 *.lib
 
+# Runtime/import library required by the FA2sp pack reader
+!libs/FA2Pack/lib/libcrypto.lib
+!libs/FA2Pack/bin/libcrypto-1_1.dll
+
 # Executables
 *.exe
 *.out

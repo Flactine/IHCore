@@ -11,6 +11,7 @@
 #include "CachedFile.h"
 #include "ExtAudio.h"
 #include "MixOverlay.h"
+#include "FA2PackFile.h"
 
 extern bool EnableCustomFile;
 
@@ -252,6 +253,7 @@ std::string GetBindingIHFile(const char* pFileName)
 	for (auto& p : Local::IHFileFilter)
 		if (p.second && ((bool(__cdecl*)(const char*))p.second)(pFileName))
 			return p.first;
+	if (FA2PackContains(pFileName)) return FA2PackStreamName;
 	return std::string();
 }
 
@@ -516,6 +518,8 @@ const char* FileClassExt::CDFileClass_SetFileName(char* pOriginalFileName)
 			{ Debug::Log("IHCore : Register File Stream \"%hs\"\n", Param.Name);
 		Local::RegisterIHFileStream(Param.Name, { Param.vptr, Param.Size }); });
 		Local::RegisterIHFileStream(pOGGMemoryFileClassName, { GetIHFileRegisterKey<OGGMemoryFileClass>(), sizeof(OGGMemoryFileClass) });
+		Local::RegisterIHFileStream(FA2PackStreamName, { GetIHFileRegisterKey<FA2PackFile>(), sizeof(FA2PackFile) });
+		FA2PackInitialize();
 		Service_BindToStream.RefreshAndProcess([](const auto& Param)
 			{ Debug::Log("IHCore : Register File \"%hs\" Binding to \"%hs\"\n", Param.OriginalName, Param.TargetName);
 		Local::IHFileBinder.insert({ Param.OriginalName, Param.TargetName }); });
