@@ -1,0 +1,4 @@
+/bin/
+# Local keys must not be committed.
+*.key
+mod-key.txt

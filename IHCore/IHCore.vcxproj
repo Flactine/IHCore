@@ -192,6 +192,9 @@
     <ClInclude Include="ConfData.h" />
     <ClInclude Include="ECDbgConsole.h" />
     <ClInclude Include="ECInterprocess.h" />
+    <ClInclude Include="EncryptedMix.h" />
+    <ClInclude Include="EncryptedMixKey.h" />
+    <ClInclude Include="..\Common\EncryptedMixFormat.h" />
     <ClInclude Include="ExtAudio.h" />
     <ClInclude Include="ExtBink.h" />
     <ClInclude Include="ExtCD.h" />
@@ -560,6 +563,7 @@
     <ClCompile Include="..\Common\Logger\Debug.cpp" />
     <ClCompile Include="..\Common\ToolFunc.cpp" />
     <ClCompile Include="CachedFile.cpp" />
+    <ClCompile Include="EncryptedMix.cpp" />
     <ClCompile Include="ExtAudio.cpp" />
     <ClCompile Include="ExtBink.cpp" />
     <ClCompile Include="Init.Info.cpp" />

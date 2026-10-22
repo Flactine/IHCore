@@ -11,6 +11,7 @@
 #include "CachedFile.h"
 #include "ExtAudio.h"
 #include "MixOverlay.h"
+#include "EncryptedMix.h"
 
 extern bool EnableCustomFile;
 
@@ -531,6 +532,7 @@ const char* FileClassExt::CDFileClass_SetFileName(char* pOriginalFileName)
 			{ Debug::Log("IHCore : Adding Path \"%hs\"\n", Param.Path); CDExt_Instance.PushCustomPathToTail(Param.Path); });
 		Service_CustomPathListFirst.RefreshAndProcess([](const auto& Param)
 			{ Debug::Log("IHCore : Adding Path \"%hs\"\n", Param.Path); CDExt_Instance.PushCustomPathToFirst(Param.Path); });
+		EncryptedMix_Register();
 		MixOverlay_InitBeforeEverything();
 		Service_AddMixDirectory.RefreshAndProcess([](const auto& Param)
 			{ Debug::Log("IHCore : Adding MixDirectory \"%hs\" -> \"%hs\" (%s)\n", Param.Directory, Param.Mix, Param.First ? "First" : "Last");
@@ -548,6 +550,7 @@ const char* FileClassExt::CDFileClass_SetFileName(char* pOriginalFileName)
 	}
 
 	auto This = reinterpret_cast<CDFileClass*>(this);
+	auto FinishName = [This]() { EncryptedMix_TryBind(This); return This->GetFileName(); };
 	const char* pFileName = CDExt_Instance.TryRedirect(pOriginalFileName);
 	char v5[MAX_PATH];
 
@@ -569,12 +572,12 @@ const char* FileClassExt::CDFileClass_SetFileName(char* pOriginalFileName)
 	{
 		This->BufferIOFileClass::SetFileName((p + pFileName).c_str());
 		if (This->BufferIOFileClass::Exists(0))
-			return This->GetFileName();
+			return FinishName();
 	}
 
 	This->BufferIOFileClass::SetFileName(pFileName);
 	if (This->IsDisabled || CDDrives::Instance().Paths.Empty() || This->BufferIOFileClass::Exists(0))
-		return This->GetFileName();
+		return FinishName();
 	auto PathLink = CDDrives::Instance().Paths.Header;
 	if (!CDDrives::Instance().Paths.Empty())
 	{
@@ -583,7 +586,7 @@ const char* FileClassExt::CDFileClass_SetFileName(char* pOriginalFileName)
 			This->BufferIOFileClass::SetFileName((p + pFileName).c_str());
 			//不会悬垂，BufferIOFileClass::SetFileName会调用strdup复制一份
 			if (This->BufferIOFileClass::Exists(0))
-				return This->GetFileName();
+				return FinishName();
 		}
 		while (1)
 		{
@@ -604,7 +607,7 @@ const char* FileClassExt::CDFileClass_SetFileName(char* pOriginalFileName)
 		{
 			This->BufferIOFileClass::SetFileName((p + pFileName).c_str());
 			if (This->BufferIOFileClass::Exists(0))
-				return This->GetFileName();
+				return FinishName();
 		}
 
 		// OGG audio fallback: if .WAV not found anywhere, try .ogg
@@ -614,7 +617,7 @@ const char* FileClassExt::CDFileClass_SetFileName(char* pOriginalFileName)
 
 		This->BufferIOFileClass::SetFileName(pFileName);
 	}
-	return This->GetFileName();
+	return FinishName();
 }
 
 const char* FileClassExt::RawFileClass_GetFileName()
